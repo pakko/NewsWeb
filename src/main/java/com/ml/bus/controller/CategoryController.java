@@ -53,6 +53,28 @@ public class CategoryController {
 			return result;
 	    }
 	    
+	    
+	    @RequestMapping(value = "showFinal", method = RequestMethod.GET)
+	    public @ResponseBody List<Map<String, Object>> showFinalCluster() throws Exception {
+	    	long start = System.currentTimeMillis();
+	    	List<Cluster> clusterList = clusterService.findAll();
+	    	List<Category> categoryList = categoryService.findAll();
+	    	
+	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+	    	for(Category category: categoryList) {
+	    		List<Cluster> clusters = getClustersByCategory(clusterList, category.getId());
+	    		Map<String, Object> map = new HashMap<String, Object>();
+	    		map.put("categoryId", category.getId());
+	    		map.put("categoryName", category.getName());
+	    		map.put("clusters", clusters);
+	    		result.add(map);
+	    	}
+			long end = System.currentTimeMillis();
+			System.out.println("耗时：" + (end -start));
+			
+			return result;
+	    }
+	    
 	    private List<Cluster> getClustersByCategory(List<Cluster> clusterList, String categoryId) {
 	    	List<Cluster> clusters = new ArrayList<Cluster>();
 	    	for(Cluster cluster: clusterList) {
