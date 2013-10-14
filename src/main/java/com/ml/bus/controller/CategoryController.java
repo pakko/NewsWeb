@@ -15,6 +15,7 @@ import com.ml.bus.model.Category;
 import com.ml.bus.model.Cluster;
 import com.ml.bus.service.CategoryService;
 import com.ml.bus.service.ClusterService;
+import com.ml.bus.service.MemoryService;
 import com.ml.util.Constants;
 
 @Controller
@@ -25,6 +26,8 @@ public class CategoryController {
 	    CategoryService categoryService;
 	    @Autowired
 	    private ClusterService clusterService;
+	    @Autowired
+	    private MemoryService memoryService;
 	    
 	    @RequestMapping(value = "", method = RequestMethod.GET)
 	    public @ResponseBody List<Category> get() {
@@ -36,18 +39,20 @@ public class CategoryController {
 	    @RequestMapping(value = "show", method = RequestMethod.GET)
 	    public @ResponseBody List<Map<String, Object>> showCluster() throws Exception {
 	    	long start = System.currentTimeMillis();
-	    	List<Cluster> clusterList = clusterService.findAll();
 	    	List<Category> categoryList = categoryService.findAll();
-	    	
+	    	Map<String, List<Cluster>> categoryClusters = memoryService.getCategoryClusters();
+    		
 	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 	    	for(Category category: categoryList) {
-	    		List<Cluster> clusters = getClustersByCategory(clusterList, category.getId());
+	    		List<Cluster> clusters = categoryClusters.get(category.getId());
+	    		
 	    		Map<String, Object> map = new HashMap<String, Object>();
 	    		map.put("categoryId", category.getId());
 	    		map.put("categoryName", category.getName());
 	    		map.put("clusters", clusters);
 	    		result.add(map);
 	    	}
+	    	
 			long end = System.currentTimeMillis();
 			System.out.println("耗时：" + (end -start));
 			
@@ -58,12 +63,14 @@ public class CategoryController {
 	    @RequestMapping(value = "showFinal", method = RequestMethod.GET)
 	    public @ResponseBody List<Map<String, Object>> showFinalCluster() throws Exception {
 	    	long start = System.currentTimeMillis();
-	    	List<Cluster> clusterList = clusterService.findAll();
 	    	List<Category> categoryList = categoryService.findAll();
-	    	
+	    	Map<String, List<Cluster>> categoryClusters = memoryService.getCategoryClusters();
+	    		
 	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 	    	for(Category category: categoryList) {
-	    		List<Cluster> clusters = getClustersByCategoryAndLimitSize(clusterList, category.getId());
+	    		List<Cluster> clusters = categoryClusters.get(category.getId());
+	    		clusters = getClustersByLimitSize(clusters);
+	    		
 	    		Map<String, Object> map = new HashMap<String, Object>();
 	    		map.put("categoryId", category.getId());
 	    		map.put("categoryName", category.getName());
@@ -76,25 +83,13 @@ public class CategoryController {
 			return result;
 	    }
 	    
-	    private List<Cluster> getClustersByCategoryAndLimitSize(
-				List<Cluster> clusterList, String categoryId) {
+	    private List<Cluster> getClustersByLimitSize(List<Cluster> clusterList) {
 	    	List<Cluster> clusters = new ArrayList<Cluster>();
 	    	for(Cluster cluster: clusterList) {
-	    		if(categoryId.equals(cluster.getCategoryId())
-	    				&& cluster.getClusterNum() >= Constants.clusterKvalue){
+	    		if(cluster.getClusterNum() >= Constants.clusterKvalue){
 	    			clusters.add(cluster);
 	    		}
 	    	}
 	    	return clusters;
 		}
-
-		private List<Cluster> getClustersByCategory(List<Cluster> clusterList, String categoryId) {
-	    	List<Cluster> clusters = new ArrayList<Cluster>();
-	    	for(Cluster cluster: clusterList) {
-	    		if(categoryId.equals(cluster.getCategoryId())){
-	    			clusters.add(cluster);
-	    		}
-	    	}
-	    	return clusters;
-	    }
 }
