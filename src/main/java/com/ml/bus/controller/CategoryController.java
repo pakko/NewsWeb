@@ -15,6 +15,7 @@ import com.ml.bus.model.Category;
 import com.ml.bus.model.Cluster;
 import com.ml.bus.service.CategoryService;
 import com.ml.bus.service.ClusterService;
+import com.ml.util.Constants;
 
 @Controller
 @RequestMapping(value = "/category")
@@ -62,7 +63,7 @@ public class CategoryController {
 	    	
 	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 	    	for(Category category: categoryList) {
-	    		List<Cluster> clusters = getClustersByCategory(clusterList, category.getId());
+	    		List<Cluster> clusters = getClustersByCategoryAndLimitSize(clusterList, category.getId());
 	    		Map<String, Object> map = new HashMap<String, Object>();
 	    		map.put("categoryId", category.getId());
 	    		map.put("categoryName", category.getName());
@@ -75,7 +76,19 @@ public class CategoryController {
 			return result;
 	    }
 	    
-	    private List<Cluster> getClustersByCategory(List<Cluster> clusterList, String categoryId) {
+	    private List<Cluster> getClustersByCategoryAndLimitSize(
+				List<Cluster> clusterList, String categoryId) {
+	    	List<Cluster> clusters = new ArrayList<Cluster>();
+	    	for(Cluster cluster: clusterList) {
+	    		if(categoryId.equals(cluster.getCategoryId())
+	    				&& cluster.getClusterNum() >= Constants.clusterKvalue){
+	    			clusters.add(cluster);
+	    		}
+	    	}
+	    	return clusters;
+		}
+
+		private List<Cluster> getClustersByCategory(List<Cluster> clusterList, String categoryId) {
 	    	List<Cluster> clusters = new ArrayList<Cluster>();
 	    	for(Cluster cluster: clusterList) {
 	    		if(categoryId.equals(cluster.getCategoryId())){

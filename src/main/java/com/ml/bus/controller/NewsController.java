@@ -54,35 +54,4 @@ public class NewsController {
 			result.put("rows", news);
 			return result;
 	    }
-	    
-	    @RequestMapping(value = "/final", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	    public @ResponseBody Map<String, Object> newsFinal(
-	    		@RequestParam(value = "categoryId", required = false) String categoryId,
-	    		@RequestParam(value = "clusterId", required = false) String clusterId,
-	    		HttpServletRequest servletRequest) {
-	    	Pagination pager = new Pagination(servletRequest);
-	    	
-	    	if(categoryId == null || categoryId.equals("")) {
-	    		pager = newsService.findByPage(pager);
-	    	}
-	    	else if(categoryId != null && !categoryId.equals("")
-	    			&& (clusterId == null || clusterId.equals(""))) {
-	    		pager = newsService.findByCategoryAndPage(categoryId, pager);
-	    	}
-	    	else if(categoryId != null && !categoryId.equals("")
-	    			&& clusterId != null && !clusterId.equals("")) {
-	    		pager = newsService.findByCategorysAndPage(categoryId, clusterId, pager);
-	    	}
-	    	
-	    	@SuppressWarnings("unchecked")
-			List<News> news = (List<News>) pager.getItems();
-	    	
-	    	Map<String, Object> result = new HashMap<String, Object>();
-			result.put("totalPage", pager.getTotalPage());
-			result.put("currentPage", pager.getCurrentPage());
-			result.put("totalCount", pager.getTotalCount());
-			result.put("rows", news);
-			return result;
-	    }
-	   
 }

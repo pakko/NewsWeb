@@ -40,7 +40,7 @@ $(function() {
 	function getData(category_id, cluster_id, page){  
 	    $.ajax({ 
 	        type: 'POST', 
-	        url: 'rs/news/final?categoryId=' + category_id + '&clusterId=' + cluster_id, 
+	        url: 'rs/news/?categoryId=' + category_id + '&clusterId=' + cluster_id, 
 	        data: {'currentPage':page, 'limitSize': 10, 'sortField': 'date', 'sortOrder': 'desc'},
 	        dataType:'json', 
 	        success:function(data){ 

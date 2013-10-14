@@ -16,6 +16,7 @@ public class Constants {
 	public static final String categoryCollectionName = "category";
 	public static final String clusterCollectionName = "cluster";
 
+    public static final int clusterKvalue = 10;
 
 
 }
