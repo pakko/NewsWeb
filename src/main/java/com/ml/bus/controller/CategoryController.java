@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ml.bus.model.Category;
@@ -37,43 +38,25 @@ public class CategoryController {
 	    }
 	    
 	    @RequestMapping(value = "show", method = RequestMethod.GET)
-	    public @ResponseBody List<Map<String, Object>> showCluster() throws Exception {
-	    	long start = System.currentTimeMillis();
-	    	List<Category> categoryList = categoryService.findAll();
-	    	Map<String, List<Cluster>> categoryClusters = memoryService.getCategoryClusters();
-    		
-	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
-	    	for(Category category: categoryList) {
-	    		List<Cluster> clusters = categoryClusters.get(category.getId());
-	    		
-	    		Map<String, Object> map = new HashMap<String, Object>();
-	    		map.put("categoryId", category.getId());
-	    		map.put("categoryName", category.getName());
-	    		map.put("clusters", clusters);
-	    		result.add(map);
-	    	}
-	    	
-			long end = System.currentTimeMillis();
-			System.out.println("耗时：" + (end -start));
-			
-			return result;
-	    }
-	    
-	    
-	    @RequestMapping(value = "showFinal", method = RequestMethod.GET)
-	    public @ResponseBody List<Map<String, Object>> showFinalCluster() throws Exception {
+	    public @ResponseBody List<Map<String, Object>> showCluster(
+	    		@RequestParam(value = "isClusterd", required = false) String isClusterd) throws Exception {
 	    	long start = System.currentTimeMillis();
 	    	List<Category> categoryList = categoryService.findAll();
 	    	Map<String, List<Cluster>> categoryClusters = memoryService.getCategoryClusters();
 	    		
 	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 	    	for(Category category: categoryList) {
-	    		List<Cluster> clusters = categoryClusters.get(category.getId());
-	    		clusters = getClustersByLimitSize(clusters);
-	    		
 	    		Map<String, Object> map = new HashMap<String, Object>();
 	    		map.put("categoryId", category.getId());
 	    		map.put("categoryName", category.getName());
+	    		
+	    		List<Cluster> clusters = categoryClusters.get(category.getId());
+	    		if(clusters == null) {
+	    			clusters = new ArrayList<Cluster>(1);
+	    		}
+	    		if(isClusterd != null && isClusterd.equalsIgnoreCase("true")) {
+    				clusters = getClustersByLimitSize(clusters);
+	    		}
 	    		map.put("clusters", clusters);
 	    		result.add(map);
 	    	}

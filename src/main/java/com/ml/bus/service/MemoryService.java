@@ -26,9 +26,9 @@ public class MemoryService {
 	IClusterDAO clusterDAO;
 	
 	Map<String, String> categoryUrl;
-	int unCategorySize;
-	int lessKClusterSize;
-	int rightSize;
+	double unCategorySize;
+	double lessKClusterSize;
+	double rightSize;
 	
 	private Map<String, List<Cluster>> categoryClusters;
 	

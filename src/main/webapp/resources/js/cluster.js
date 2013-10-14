@@ -3,7 +3,12 @@ $(function() {
 	$("#newsContent").data("category", "");
 	$("#pageCount").data("cluster", "");
 	//加载目录
-	getAjaxRequest('rs/category/show', onCategoryDataReceived);
+	var categoryUrl = "rs/category/show";
+	var isClusterd = getUrlParam("isClusterd");
+	if(isClusterd != null && isClusterd == "true"){
+		categoryUrl = categoryUrl + "?isClusterd=true";
+	}
+	getAjaxRequest(categoryUrl, onCategoryDataReceived);
 	$("#menu").menu({
 		  select: function( event, ui ) {
 			  //get category id
@@ -121,4 +126,11 @@ function formatDate(datetime) {
 	return date.toString("yyyy-MM-dd HH:mm:ss");
 }
 
+function getUrlParam(name) {
+	var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); // 构造一个含有目标参数的正则表达式对象
+	var r = window.location.search.substr(1).match(reg); // 匹配目标参数
+	if (r != null)
+		return unescape(r[2]);
+	return null; // 返回参数值
+} 
 
