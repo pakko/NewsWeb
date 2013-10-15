@@ -42,7 +42,8 @@ public class CategoryController {
 	    		@RequestParam(value = "isClusterd", required = false) String isClusterd) throws Exception {
 	    	long start = System.currentTimeMillis();
 	    	List<Category> categoryList = categoryService.findAll();
-	    	Map<String, List<Cluster>> categoryClusters = memoryService.getCategoryClusters();
+	    	List<Cluster> clusterList = clusterService.findAll();
+	    	Map<String, List<Cluster>> categoryClusters = initCategoryClusters(clusterList);
 	    		
 	    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 	    	for(Category category: categoryList) {
@@ -74,5 +75,19 @@ public class CategoryController {
 	    		}
 	    	}
 	    	return clusters;
+		}
+	    
+	    private Map<String, List<Cluster>> initCategoryClusters(List<Cluster> clusterList) {
+	    	Map<String, List<Cluster>> categoryClusters = new HashMap<String, List<Cluster>>();
+			for(Cluster cluster: clusterList) {
+	    		String categoryId = cluster.getCategoryId();
+	    		List<Cluster> clusters = categoryClusters.get(categoryId);
+	    		if(clusters == null) {
+	    			clusters = new ArrayList<Cluster>();
+	    		}
+	    		clusters.add(cluster);
+	    		categoryClusters.put(categoryId, clusters);
+	    	}
+			return categoryClusters;
 		}
 }

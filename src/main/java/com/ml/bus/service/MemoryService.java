@@ -7,11 +7,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ml.bus.dao.IClusterDAO;
-import com.ml.bus.dao.INewsDAO;
 import com.ml.bus.model.Cluster;
 import com.ml.bus.model.News;
 import com.ml.util.Constants;
@@ -20,46 +17,37 @@ import com.ml.util.Constants;
 @Service
 public class MemoryService {
 	
-	@Autowired
-	INewsDAO newsDAO;
-	@Autowired
-	IClusterDAO clusterDAO;
-	
 	Map<String, String> categoryUrl;
-	double unCategorySize;
-	double lessKClusterSize;
-	double rightSize;
-	
-	private Map<String, List<Cluster>> categoryClusters;
 	
 	@PostConstruct 
     public void init(){ 
-		long start = System.currentTimeMillis();
-		
-		List<News> newsList = newsDAO.findAll();
-		List<Cluster> clusterList = clusterDAO.findAll();
-    	
-		//get category's clusters
-    	initCategoryClusters(clusterList);
-    	
-		//calculate the right accuracy
 		initCategoryUrl();
-		List<String> uneccessaryCluster = getUneccessaryCluster(clusterList);
-		List<News> list = getNeededNews(newsList, uneccessaryCluster);
-		calculateNews(list);
-		
-		long end = System.currentTimeMillis();
-		
-		System.out.println("---------------------------------------------------------------------------------------");
-		System.out.println("Accuracy: " + (rightSize / list.size()) + ", right size: " + rightSize);
-		System.out.println("UnCategory size: " + unCategorySize + ", less than K Cluster size: " + lessKClusterSize );
-		System.out.println("Complete init memory datasets. Total News size: " + newsList.size());
-		System.out.println("Cost time:" + (end - start) );
-		System.out.println("---------------------------------------------------------------------------------------");
-
-		newsList.clear();
-		newsList = null;
     }
+	
+	public Map<String, Integer> getNewsStats(List<News> newsList, List<Cluster> clusterList) {
+		Map<String, Integer> stats = new HashMap<String, Integer>();
+		stats.put("preTotalNewsSize", newsList.size());
+
+		List<String> unecessaryCluster = getUnecessaryCluster(clusterList);
+		stats.put("unecessaryClusterSize", unecessaryCluster.size());
+		
+		List<News> categoryList = removeUncategoryNews(newsList);
+		stats.put("categoryNewsSize", categoryList.size());
+		stats.put("uncategoryNewsSize", newsList.size() - categoryList.size());
+		
+		int unClusterRightNewsSize = calculateNews(categoryList);
+		stats.put("unClusterRightNewsSize", unClusterRightNewsSize);
+
+		List<News> moreKClusterList = removeLessKClusterNews(categoryList, unecessaryCluster);
+		stats.put("moreKClusterNewsSize", moreKClusterList.size());
+		stats.put("lessKClusterNewsSize", categoryList.size() - moreKClusterList.size());
+		
+		int rightSize = calculateNews(moreKClusterList);
+		stats.put("finalTotalNewsSize", moreKClusterList.size());
+		stats.put("rightNewsSize", rightSize);
+		
+		return stats;
+	}
 
 	private void initCategoryUrl() {
 		categoryUrl = new HashMap<String, String>();
@@ -73,23 +61,20 @@ public class MemoryService {
 		categoryUrl.put("job", "C000022");
 		categoryUrl.put("cul", "C000023");
 		categoryUrl.put("mil", "C000024");
-		
 	}
 	
-	private List<String> getUneccessaryCluster(List<Cluster> clusterList) {
+	private List<String> getUnecessaryCluster(List<Cluster> clusterList) {
 		//get less than k's cluster
-		List<String> uneccessaryCluster = new ArrayList<String>();
+		List<String> unecessaryCluster = new ArrayList<String>();
 		for(Cluster cluster: clusterList) {
 			if(cluster.getClusterNum() < Constants.clusterKvalue) {
-				uneccessaryCluster.add(cluster.getClusterId());
+				unecessaryCluster.add(cluster.getClusterId());
 			}
 		}
-		return uneccessaryCluster;
+		return unecessaryCluster;
 	}
 	
-	private List<News> getNeededNews(List<News> newsList, List<String> uneccessaryCluster) {
-		unCategorySize = 0;
-		lessKClusterSize = 0;
+	private List<News> removeUncategoryNews(List<News> newsList) {
 		List<News> list = new ArrayList<News>();
 		for(News news: newsList) {
 			//remove uncategory news
@@ -97,14 +82,6 @@ public class MemoryService {
 			String originCategory = categoryUrl.get(news.getOriginalCategory());
 			if(categoryId == null || originCategory == null ||
 					originCategory.equals("")) {
-				unCategorySize++;
-				continue;
-			}
-			
-			//remove less than k's cluster news
-			String clusterId = news.getClusterId();
-			if(uneccessaryCluster.contains(clusterId)) {
-				lessKClusterSize++;
 				continue;
 			}
 			list.add(news);
@@ -112,37 +89,28 @@ public class MemoryService {
 		return list;
 	}
 	
-	private void calculateNews(List<News> newsList) {
-		rightSize = 0;
+	private List<News> removeLessKClusterNews(List<News> newsList, List<String> uneccessaryCluster) {
+		List<News> list = new ArrayList<News>();
+		for(News news: newsList) {
+			//remove less than k's cluster news
+			String clusterId = news.getClusterId();
+			if(uneccessaryCluster.contains(clusterId)) {
+				continue;
+			}
+			list.add(news);
+		}
+		return list;
+	}
+	
+	private int calculateNews(List<News> newsList) {
+		int i = 0;
 		for(News news: newsList) {
 			String categoryId = news.getCategoryId();
 			String originCategory = categoryUrl.get(news.getOriginalCategory());
 			if(originCategory.equals(categoryId)){
-				rightSize++;
+				i++;
 			}
 		}
+		return i;
 	}
-
-	private void initCategoryClusters(List<Cluster> clusterList) {
-		categoryClusters = new HashMap<String, List<Cluster>>();
-		for(Cluster cluster: clusterList) {
-    		String categoryId = cluster.getCategoryId();
-    		List<Cluster> clusters = categoryClusters.get(categoryId);
-    		if(clusters == null) {
-    			clusters = new ArrayList<Cluster>();
-    		}
-    		clusters.add(cluster);
-    	}
-	}
-	
-	
-
-	public Map<String, List<Cluster>> getCategoryClusters() {
-		return categoryClusters;
-	}
-
-	public void setCategoryClusters(Map<String, List<Cluster>> categoryClusters) {
-		this.categoryClusters = categoryClusters;
-	}
-	
 }
