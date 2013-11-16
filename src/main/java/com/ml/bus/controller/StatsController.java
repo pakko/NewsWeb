@@ -36,23 +36,23 @@ public class StatsController {
 			List<Cluster> clusterList = clusterService.findAll();
 			Map<String, Integer> stats = memoryService.getNewsStats(newsList, clusterList);
 			
-			int preTotalNewsSize = stats.get("preTotalNewsSize");
-			int unecessaryClusterSize = stats.get("unecessaryClusterSize");
+			int totalNewsSize = stats.get("totalNewsSize");
+			int lessKClusterSize = stats.get("lessKClusterSize");
 			int categoryNewsSize = stats.get("categoryNewsSize");
-			int uncategoryNewsSize = stats.get("uncategoryNewsSize");
-			int unClusterRightNewsSize = stats.get("unClusterRightNewsSize");
+			int unCategoryNewsSize = stats.get("unCategoryNewsSize");
+			int rightCategoryNewsSize = stats.get("rightCategoryNewsSize");
+			int moreKClusterNewsSize = stats.get("moreKClusterNewsSize");
 			int lessKClusterNewsSize = stats.get("lessKClusterNewsSize");
-			int finalTotalNewsSize = stats.get("finalTotalNewsSize");
-			int rightNewsSize = stats.get("rightNewsSize");
+			int rightClusterNewsSize = stats.get("rightClusterNewsSize");
 			
 			long end = System.currentTimeMillis();
 			
 			StringBuffer sb = new StringBuffer();
 			sb.append("---------------------------------------------------------------------------------------\n");
-			sb.append("Total News size: " + preTotalNewsSize + ", UnCluster Total News Size: " + categoryNewsSize + ", Final Total News Size: " + finalTotalNewsSize + "\n");
-			sb.append("Unecessary Cluster Size: " + unecessaryClusterSize + ", UnCategory size: " + uncategoryNewsSize + ", less than K Cluster size: " + lessKClusterNewsSize + "\n");
-			sb.append("Before Cluster Accuracy: " + (unClusterRightNewsSize * 1.0 / categoryNewsSize) + ", right size: " + unClusterRightNewsSize + "\n");
-			sb.append("Accuracy: " + (rightNewsSize * 1.0 / finalTotalNewsSize) + ", right size: " + rightNewsSize + "\n");
+			sb.append("Total News size: " + totalNewsSize + ", After Category News Size: " + categoryNewsSize + ", After Cluster News Size: " + moreKClusterNewsSize + "\n");
+			sb.append("Less Than K Cluster Size: " + lessKClusterSize + ", UnCategory Size: " + unCategoryNewsSize + ", Less Than K Cluster News Size: " + lessKClusterNewsSize + "\n");
+			sb.append("After Category Accuracy: " + (rightCategoryNewsSize * 1.0 / categoryNewsSize) + ", right size: " + rightCategoryNewsSize + "\n");
+			sb.append("After Cluster Accuracy: " + (rightClusterNewsSize * 1.0 / moreKClusterNewsSize) + ", right size: " + rightClusterNewsSize + "\n");
 			sb.append("Cost time:" + (end - start) + "\n");
 			sb.append("---------------------------------------------------------------------------------------\n");
 			System.out.println(sb.toString());

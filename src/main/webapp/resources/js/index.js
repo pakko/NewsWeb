@@ -78,27 +78,9 @@ $(function() {
 	
 });
 
-function getAjaxRequest(requestUrl, onSucessFunction) {
-	$.ajax({
-		url: requestUrl,
-		type: 'GET',
-		dataType: 'json',
-		cache: false,
-		async: false,
-		success: onSucessFunction
-	});
-}
-
 function onCategoryDataReceived(data) {
 	for(var i = 0; i < data.length; i++){
 		var child = "<li><a id='" + data[i].id + "' href='#'>" + data[i].name + "</a></li>";
 		$("#menu").append(child);
 	}
 }
-
-function formatDate(datetime) {
-	var date = new Date(Number(datetime));
-	return date.toString("yyyy-MM-dd HH:mm:ss");
-}
-
-

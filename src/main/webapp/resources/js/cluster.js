@@ -65,9 +65,9 @@ $(function() {
 	    }); 
 	}
 
-	//获取分页条 
-	function getPageBar(){ 
-	    //页码大于最大页数 
+	//获取分页条
+	function getPageBar(){
+		//页码大于最大页数 
 	    if(currentPage > totalPage) currentPage = totalPage; 
 	    //页码小于1 
 	    if(currentPage < 1) currentPage = 1; 
@@ -92,17 +92,6 @@ $(function() {
 	
 });
 
-function getAjaxRequest(requestUrl, onSucessFunction) {
-	$.ajax({
-		url: requestUrl,
-		type: 'GET',
-		dataType: 'json',
-		cache: false,
-		async: false,
-		success: onSucessFunction
-	});
-}
-
 function onCategoryDataReceived(data) {
 	for(var i = 0; i < data.length; i++){
 		var child;
@@ -119,11 +108,6 @@ function onCategoryDataReceived(data) {
 		}
 		$("#menu").append(child);
 	}
-}
-
-function formatDate(datetime) {
-	var date = new Date(Number(datetime));
-	return date.toString("yyyy-MM-dd HH:mm:ss");
 }
 
 function getUrlParam(name) {

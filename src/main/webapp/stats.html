@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>News Classification</title>
+		<link type="text/css" href="resources/css/jquery-ui.min.css" rel="stylesheet" />
+
+		<!-- Framework CSS -->
+		<link rel="stylesheet" href="resources/css/blueprint/screen.css" type="text/css" media="screen, projection"/>
+		<link rel="stylesheet" href="resources/css/blueprint/print.css" type="text/css" media="print"/>
+		<!--[if lte IE 8]><link rel="stylesheet" href="resources/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+		<link rel="stylesheet" href="resources/css/rain.css" type="text/css" media="screen, projection"/>
+		<!--[if lt IE 9]><script type="text/javascript" src="resources/js/html5.js"></script><![endif]-->
+
+		<!-- Custom CSS -->
+		<link type="text/css" href="resources/css/style.css" rel="stylesheet" />
+
+		<script src="resources/js/jquery/jquery-2.0.3.min.js" type="text/javascript"></script>
+		<script src="resources/js/jquery/jquery-ui.min.js" type="text/javascript"></script>
+		<script src="resources/js/jquery/jquery.tmpl.min.js" type="text/javascript"></script>
+		<script src="resources/js/date.js" type="text/javascript"></script>
+		<script src="resources/js/highcharts/highcharts.js"></script>
+		<script src="resources/js/highcharts/modules/exporting.js"></script>
+		
+		<script src="resources/js/common.js" type="text/javascript"></script>
+		<script src="resources/js/stats.js" type="text/javascript"></script>
+	</head>
+
+	<body class="body">
+		<div class="header headerBlue">
+			<nav class="listStyleNo positionR clearfix">
+				<a href="#" class="headerLink headerLinkBlue left paddingRight paddingLeft displayBlock textDecNone">新闻</a>
+				<a href="#" class="headerLink headerLinkBlue left paddingRight paddingLeft displayBlock textDecNone">微博</a>
+				<a href="#" class="headerLink headerLinkBlue left paddingRight paddingLeft displayBlock textDecNone">购物</a>
+			</nav>
+		</div>
+		<div class="headerM headerGrey">
+			<div class="container positionR">
+				<div id="customHeader">
+					<a class="textDecNone displayBlock paddingTopLL fontsizeXxlarge" href="./">Pakko新闻分类器</a>
+					<a class="textDecNone displayBlock paddingTop-3 paddingLeftLL" href="./cluster.html">clustered</a>
+					<a class="textDecNone displayBlock paddingTop-3 paddingLeftLL" href="./cluster.html?isClusterd=true">KClustered</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="container marginTop">
+			<div class="content">
+			
+				<div class="main">
+					<div>
+						<table>
+							<tr>
+								<td id="statsCharts"></td>
+								<td id="statsCharts2"></td>
+							</tr>
+						</table>
+					</div>
+					<div id="statssContent">
+						<table>
+							<tr>
+								<td>所有新闻数：</td>
+								<td id="stats1"></td>
+								<td>分类后新闻数：</td>
+								<td id="stats2"></td>
+								<td>聚类后新闻数：</td>
+								<td id="stats3"></td>
+							</tr>
+							<tr>
+								<td>未分类新闻数：</td>
+								<td id="stats4"></td>
+								<td>小于K聚类的新闻数：</td>
+								<td id="stats5"></td>
+								<td>小于K的聚类数：</td>
+								<td id="stats6"></td>
+							</tr>
+							<tr>
+								<td>分类后准确率：</td>
+								<td id="stats7"></td>
+								<td>分类后新闻准确数：</td>
+								<td colspan="3" id="stats8"></td>
+							</tr>
+							<tr>
+								<td>聚类后准确率：</td>
+								<td id="stats9"></td>
+								<td>聚类后新闻准确数：</td>
+								<td colspan="3" id="stats10"></td>
+							</tr>
+						</table>
+					</div>
+					
+				</div>
+
+				<footer class="footer socialFooter clear borderTop">
+					<p class="bottom paddingLeftS">
+						Copyright 2013 Pakko Empire All rights reserved.
+					</p>
+				</footer>
+			</div>
+		</div>
+	</body>
+
+</html>

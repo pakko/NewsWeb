@@ -26,25 +26,24 @@ public class MemoryService {
 	
 	public Map<String, Integer> getNewsStats(List<News> newsList, List<Cluster> clusterList) {
 		Map<String, Integer> stats = new HashMap<String, Integer>();
-		stats.put("preTotalNewsSize", newsList.size());
+		stats.put("totalNewsSize", newsList.size());
 
-		List<String> unecessaryCluster = getUnecessaryCluster(clusterList);
-		stats.put("unecessaryClusterSize", unecessaryCluster.size());
+		List<String> lessKCluster = getLessKCluster(clusterList);
+		stats.put("lessKClusterSize", lessKCluster.size());
 		
 		List<News> categoryList = removeUncategoryNews(newsList);
 		stats.put("categoryNewsSize", categoryList.size());
-		stats.put("uncategoryNewsSize", newsList.size() - categoryList.size());
+		stats.put("unCategoryNewsSize", newsList.size() - categoryList.size());
 		
-		int unClusterRightNewsSize = calculateNews(categoryList);
-		stats.put("unClusterRightNewsSize", unClusterRightNewsSize);
+		int rightCategoryNewsSize = calculateNews(categoryList);
+		stats.put("rightCategoryNewsSize", rightCategoryNewsSize);
 
-		List<News> moreKClusterList = removeLessKClusterNews(categoryList, unecessaryCluster);
+		List<News> moreKClusterList = removeLessKClusterNews(categoryList, lessKCluster);
 		stats.put("moreKClusterNewsSize", moreKClusterList.size());
 		stats.put("lessKClusterNewsSize", categoryList.size() - moreKClusterList.size());
 		
-		int rightSize = calculateNews(moreKClusterList);
-		stats.put("finalTotalNewsSize", moreKClusterList.size());
-		stats.put("rightNewsSize", rightSize);
+		int rightClusterNewsSize = calculateNews(moreKClusterList);
+		stats.put("rightClusterNewsSize", rightClusterNewsSize);
 		
 		return stats;
 	}
@@ -63,15 +62,15 @@ public class MemoryService {
 		categoryUrl.put("mil", "C000024");
 	}
 	
-	private List<String> getUnecessaryCluster(List<Cluster> clusterList) {
+	private List<String> getLessKCluster(List<Cluster> clusterList) {
 		//get less than k's cluster
-		List<String> unecessaryCluster = new ArrayList<String>();
+		List<String> lessKCluster = new ArrayList<String>();
 		for(Cluster cluster: clusterList) {
 			if(cluster.getClusterNum() < Constants.clusterKvalue) {
-				unecessaryCluster.add(cluster.getClusterId());
+				lessKCluster.add(cluster.getClusterId());
 			}
 		}
-		return unecessaryCluster;
+		return lessKCluster;
 	}
 	
 	private List<News> removeUncategoryNews(List<News> newsList) {
